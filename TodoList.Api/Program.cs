@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using TodoList.Api.Data;
+using TodoList.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,11 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 });
 
 
+
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 
@@ -21,6 +27,11 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TodoListDbContext>();
     db.Database.Migrate();
+    //seed db
+
+    //var logger = scope.ServiceProvider.GetService<ILogger<TodoListDbContextSeed>>();
+    //if (logger != null)
+    //    new TodoListDbContextSeed().SeedAsync(db, logger).Wait();
 }
 
 
@@ -41,8 +52,15 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 });
-
+app.MigrateDbContext<TodoListDbContext>((context, services) =>
+{
+    var logger = services.GetService<ILogger<TodoListDbContextSeed>>();
+    if (logger != null)
+        new TodoListDbContextSeed().SeedAsync(context, logger).Wait();
+});
 app.Run();
+
+
 
 internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
 {
