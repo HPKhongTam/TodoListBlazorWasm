@@ -71,6 +71,17 @@ namespace TodoList.Api.Migrations
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
+
+            //update table
+            migrationBuilder.AlterColumn<bool>
+                (
+                    name: "FirstName",
+                    table: "AspNetUsers",
+                    nullable:true,
+                    oldClrType: typeof(bool),
+                    oldNullable:false
+                );
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
