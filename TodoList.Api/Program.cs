@@ -14,6 +14,17 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 });
 
 builder.Services.AddControllers();
+
+//add cross
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",builder=>builder
+    .SetIsOriginAllowed((host)=>true)
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+});
+
 builder.Services.AddTransient<ITaskRepository,TaskRepository>();
 
 
@@ -67,10 +78,7 @@ app.MigrateDbContext<TodoListDbContext>((context, services) =>
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//});
+app.UseCors("CorsPolicy");
 app.Run();
 
 

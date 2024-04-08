@@ -1,0 +1,68 @@
+﻿@page "/TaskList"
+
+@using TodoListBlazorWasm.Compo;
+
+<h3>TodoList </h3>
+
+@if (Tasks == null)
+{
+    <LoadingIndicator></LoadingIndicator>
+}
+else
+{
+    <div class="row">
+        <EditForm Model="@TaskListSearch">
+            <div class="col">
+                <label>Name</label>
+                <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
+            </div>
+            <div class="col">
+                <label>Assignee</label>
+                <InputText class="form-control" @bind-Value="TaskListSearch.AssigneeId"></InputText>
+            </div>
+            <div class="col">
+                <label>Name</label>
+                <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
+            </div>
+            <div class="col">
+               
+               <button type="submit" class="btn btn-success"></button>
+            </div>
+        </EditForm>
+    </div>
+
+    <div class="row mt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Priority</th>
+                    <th>Assignee</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Tasks)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Priority</td>
+                        <td>@item.AssigneeName</td>
+                        <td>@item.CreatedDate.ToString("dd/MM/yyyy hh:mm")</td>
+                        <td>@item.Status</td>
+                        <td>
+                            <a href="/taskDetails/@item.Id">Detail</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+   
+}
+
+
+
