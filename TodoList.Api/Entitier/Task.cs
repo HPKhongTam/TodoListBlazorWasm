@@ -13,7 +13,7 @@ namespace TodoList.Api.Entitier
         public string? Name { get; set; }
         public Guid? AssigneeId { get; set; }
         [ForeignKey(name: "AssigneeId")]
-        public User Assignee { get; set; }
+        public User? Assignee { get; set; }
         public DateTime CreatedDate { get; set; }
         public Priority Priority { get; set; }
         public Status Status { get; set; }     
