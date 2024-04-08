@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoList.Api.Data;
+using TodoList.Models;
+using TodoList.Models.Enums;
 
 namespace TodoList.Api.Repositories
 {
@@ -29,9 +31,18 @@ namespace TodoList.Api.Repositories
             return await _context.Tasks.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Entitier.Task>> GetTasksList()
+        public async Task<IEnumerable<TaskDto>> GetTasksList()
         {
-            return await _context.Tasks.ToListAsync();
+            return await _context.Tasks.Include(x => x.Assignee).Select(x => new TaskDto()
+            {
+                Status = (Status)x.Status,
+                Name = x.Name != null ? x.Name : "",
+                AsigneeId = x.AssigneeId,
+                AssigneeName = x.Assignee != null ? x.Assignee.FirstName + ' ' + x.Assignee.LastName : "",
+                CreatedDate = x.CreatedDate,
+                Priority = (Priority)x.Priority,
+                Id = x.Id,
+            }).ToListAsync();
         }
 
         public async Task<Entitier.Task> Update(Entitier.Task task)

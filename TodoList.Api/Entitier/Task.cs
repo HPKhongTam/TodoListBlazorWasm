@@ -15,7 +15,7 @@ namespace TodoList.Api.Entitier
         [ForeignKey(name: "AssigneeId")]
         public User? Assignee { get; set; }
         public DateTime CreatedDate { get; set; }
-        public Priority Priority { get; set; }
-        public Status Status { get; set; }     
+        public int Priority { get; set; }
+        public int Status { get; set; }     
     }
 }
