@@ -17,10 +17,11 @@ namespace TodoListBlazorWasm.Sevices
             return result!=null?result:new TaskDto();
         }
 
-        public async Task<List<TaskDto>> GetTaskList()
+        public async Task<List<TaskDto>> GetTaskList(TaskListSearch taskListSearch)
         {
-            var result = await _httpClient.GetFromJsonAsync<List<TaskDto>>("/api/tasks");
-            return result;
+            string url = $"/api/tasks?name={taskListSearch.Name}&assigneeId={taskListSearch.AssigneeId}&priority={taskListSearch.Priority}";
+            var result = await _httpClient.GetFromJsonAsync<List<TaskDto>>(url);
+            return result!=null?result:new List<TaskDto>();
         }
     }
 }

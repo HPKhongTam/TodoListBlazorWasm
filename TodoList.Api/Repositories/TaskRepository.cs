@@ -31,9 +31,17 @@ namespace TodoList.Api.Repositories
             return await _context.Tasks.FindAsync(id);
         }
 
-        public async Task<IEnumerable<TaskDto>> GetTasksList()
+        public async Task<IEnumerable<TaskDto>> GetTasksList(TaskListSearch taskListSearch)
         {
-            return await _context.Tasks.Include(x => x.Assignee).Select(x => new TaskDto()
+            var query = _context.Tasks.Include(x => x.Assignee).AsQueryable();
+            if (!string.IsNullOrEmpty(taskListSearch.Name))
+                query = query.Where(x => x.Name.Contains(taskListSearch.Name));
+            if (taskListSearch.AssigneeId.HasValue && taskListSearch.AssigneeId.Value.ToString() != "0")
+                query = query.Where(x => x.AssigneeId.Value == taskListSearch.AssigneeId.Value);
+            if (taskListSearch.Priority.HasValue && taskListSearch.Priority.Value.ToString() != "100")
+                query = query.Where(x => x.Priority == (int)taskListSearch.Priority.Value);
+
+            return await query.Select(x => new TaskDto()
             {
                 Status = (Status)x.Status,
                 Name = x.Name != null ? x.Name : "",
@@ -43,6 +51,8 @@ namespace TodoList.Api.Repositories
                 Priority = (Priority)x.Priority,
                 Id = x.Id,
             }).ToListAsync();
+
+
         }
 
         public async Task<Entitier.Task> Update(Entitier.Task task)

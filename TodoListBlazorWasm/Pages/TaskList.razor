@@ -1,33 +1,52 @@
 ﻿@page "/TaskList"
 
 @using TodoListBlazorWasm.Compo;
+@using TodoList.Models.Enums;
 
 <h3>TodoList </h3>
 
-@if (Tasks == null)
+@if (Tasks == null || Assignees == null)
 {
     <LoadingIndicator></LoadingIndicator>
 }
 else
 {
     <div class="row">
-        <EditForm Model="@TaskListSearch">
-            <div class="col">
-                <label>Name</label>
-                <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
+        <EditForm Model="@TaskListSearch" OnSubmit="@SearchForm">
+            <div class="row">
+                <div class="col">
+                    <label>Name</label>
+                    <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
+                </div>
+                <div class="col">
+                    <label>Assignee</label>
+                    <InputSelect class="form-control" @bind-Value="TaskListSearch.AssigneeId">
+                        <option>Select an assignee</option>
+                        @foreach (var assignee in Assignees)
+                        {
+                            <option value="@assignee.Id">@assignee.FullName</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col">
+                    <label>Priority</label>
+                    <InputSelect class="form-control" @bind-Value="TaskListSearch.Priority">
+                        <option value="100">Select a Priority</option>
+                        @foreach (string item in Enum.GetNames(typeof(Priority)))
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col pt-4">
+
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+                <div class="col pt-4">
+                   <a href="/taskCreate" class="btn btn-primary">Create</a>
+                </div>
             </div>
-            <div class="col">
-                <label>Assignee</label>
-                <InputText class="form-control" @bind-Value="TaskListSearch.AssigneeId"></InputText>
-            </div>
-            <div class="col">
-                <label>Name</label>
-                <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
-            </div>
-            <div class="col">
-               
-               <button type="submit" class="btn btn-success"></button>
-            </div>
+
         </EditForm>
     </div>
 
@@ -61,7 +80,7 @@ else
 
         </table>
     </div>
-   
+
 }
 
 

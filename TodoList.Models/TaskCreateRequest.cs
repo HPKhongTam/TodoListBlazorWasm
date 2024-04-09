@@ -11,13 +11,13 @@ namespace TodoList.Models
 {
     public class TaskCreateRequest
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        [MaxLength(250)]
-        [Required]
-        public string? Name { get; set; }
-
-        public Priority Priority { get; set; }
+        [MaxLength(250,ErrorMessage ="Bạn không thể nhập quá 250 kí tự!")]
+        [Required(ErrorMessage ="Xin vui lòng nhập tên!")]
+        public string Name { get; set; }
+        [Required(ErrorMessage ="Vui lòng chọn Priority!")]
+        public Priority? Priority { get; set; }
 
     }
 }

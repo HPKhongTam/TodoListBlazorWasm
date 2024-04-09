@@ -5,7 +5,7 @@ namespace TodoList.Api.Repositories
 {
    public  interface ITaskRepository
     {
-        Task<IEnumerable<TaskDto>> GetTasksList();
+        Task<IEnumerable<TaskDto>> GetTasksList(TaskListSearch taskListSearch);
 
         Task<Task> Delete(Task task);
 

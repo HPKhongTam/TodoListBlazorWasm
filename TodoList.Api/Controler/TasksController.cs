@@ -19,9 +19,9 @@ namespace TodoList.Api.Controler
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] TaskListSearch taskListSearch)
         {
-            var tasks = await _taskRepository.GetTasksList();
+            var tasks = await _taskRepository.GetTasksList(taskListSearch);
             return Ok(tasks);
         }
         [HttpPost]
@@ -34,7 +34,7 @@ namespace TodoList.Api.Controler
                 Name = request.Name,
                 Status = (int)Status.Open,
                 CreatedDate = DateTime.Now,
-                Priority = (int)request.Priority,
+                Priority = request.Priority.HasValue? (int)request.Priority.Value:(int)Priority.Low,
                 Id = request.Id
 
             });
