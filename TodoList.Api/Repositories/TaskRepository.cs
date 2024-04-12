@@ -40,6 +40,7 @@ namespace TodoList.Api.Repositories
                 query = query.Where(x => x.AssigneeId.Value == taskListSearch.AssigneeId.Value);
             if (taskListSearch.Priority.HasValue && taskListSearch.Priority.Value.ToString() != "100")
                 query = query.Where(x => x.Priority == (int)taskListSearch.Priority.Value);
+          
 
             return await query.Select(x => new TaskDto()
             {
@@ -50,7 +51,7 @@ namespace TodoList.Api.Repositories
                 CreatedDate = x.CreatedDate,
                 Priority = (Priority)x.Priority,
                 Id = x.Id,
-            }).ToListAsync();
+            }).OrderByDescending(x=>x.CreatedDate).ToListAsync();
 
 
         }

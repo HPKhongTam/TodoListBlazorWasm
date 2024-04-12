@@ -1,2 +1,4 @@
 ﻿*** web tham khao
 	https://blazor-university.com/
+	Microsoft Docs: https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-5.0
+    Blazor University: https://blazor-university.com/
