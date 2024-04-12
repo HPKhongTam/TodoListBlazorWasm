@@ -6,7 +6,7 @@
 @inject TodoListBlazorWasm.Sevices.ITaskApiClient TaskApiClient;
 @inject IToastService ToastServices;
 
-<h3>TaskCreate</h3>
+<h3>Task Edit: @Task.Name</h3>
 
 
 <EditForm Model="Task" OnValidSubmit="SubmitTask">
@@ -34,7 +34,10 @@
 </EditForm>
 
 @code {
-    private TaskCreateRequest Task = new TaskCreateRequest();
+    [Parameter]
+    public string TaskId { get; set; }
+    private TaskCreateRequest Task; 
+
 
     private async Task SubmitTask(EditContext context)
     {
