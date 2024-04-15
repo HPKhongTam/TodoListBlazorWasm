@@ -47,7 +47,7 @@ namespace TodoList.Api.Repositories
                 Status = (Status)x.Status,
                 Name = x.Name != null ? x.Name : "",
                 AsigneeId = x.AssigneeId,
-                AssigneeName = x.Assignee != null ? x.Assignee.FirstName + ' ' + x.Assignee.LastName : "",
+                AssigneeName = x.Assignee != null ? x.Assignee.FirstName + ' ' + x.Assignee.LastName : "N/A",
                 CreatedDate = x.CreatedDate,
                 Priority = (Priority)x.Priority,
                 Id = x.Id,

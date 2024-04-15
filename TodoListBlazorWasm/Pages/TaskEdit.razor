@@ -1,4 +1,4 @@
-﻿@page "/taskEdit"
+﻿@page "/taskEdit/{TaskId}"
 
 @using TodoList.Models;
 @using TodoList.Models.Enums;
@@ -6,42 +6,54 @@
 @inject TodoListBlazorWasm.Sevices.ITaskApiClient TaskApiClient;
 @inject IToastService ToastServices;
 
-<h3>Task Edit: @Task.Name</h3>
+@if (Task == null)
+{
+    <TodoListBlazorWasm.Compo.LoadingIndicator></TodoListBlazorWasm.Compo.LoadingIndicator>
+}
+else
+{
+    <h3>Task Edit: @Task.Name</h3>
+    <EditForm Model="Task" OnValidSubmit="SubmitTask">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="Name">Name</label>
+            <InputText class="form-control" @bind-Value="Task.Name"></InputText>
+            <ValidationMessage For="()=>Task.Name"></ValidationMessage>
+            <small id="nameHelp" class="form-text text-muted">Please enter task title here</small>
+        </div>
+        <div class="form-group">
+            <label for="Priority">Priority</label>
+            <InputSelect class="form-control" @bind-Value="Task.Priority">
+                <option>Select a Priority</option>
+                @foreach (string item in Enum.GetNames(typeof(Priority)))
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>Task.Priority"></ValidationMessage>
+            <small id="priorityHelp" class="form-text text-muted">Choose a priority which you want</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
 
+    </EditForm>
+}
 
-<EditForm Model="Task" OnValidSubmit="SubmitTask">
-    <DataAnnotationsValidator />
-    <div class="form-group">
-        <label for="Name">Name</label>
-        <InputText class="form-control" @bind-Value="Task.Name"></InputText>
-        <ValidationMessage For="()=>Task.Name"></ValidationMessage>
-        <small id="nameHelp" class="form-text text-muted">Please enter task title here</small>
-    </div>
-    <div class="form-group">
-        <label for="Priority">Priority</label>
-        <InputSelect class="form-control" @bind-Value="Task.Priority">
-            <option>Select a Priority</option>
-            @foreach (string item in Enum.GetNames(typeof(Priority)))
-            {
-                <option value="@item">@item</option>
-            }
-        </InputSelect>
-        <ValidationMessage For="()=>Task.Priority"></ValidationMessage>
-        <small id="priorityHelp" class="form-text text-muted">Choose a priority which you want</small>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-
-</EditForm>
 
 @code {
     [Parameter]
     public string TaskId { get; set; }
-    private TaskCreateRequest Task; 
-
+    private TaskUpdateRequest Task; 
+    protected async override Task OnInitializedAsync()
+    {
+        var taskDto = await TaskApiClient.GetTaskDetail(TaskId);
+        Task = new TaskUpdateRequest();
+        Task.Name = taskDto.Name;
+        Task.Priority = taskDto.Priority;
+    }
 
     private async Task SubmitTask(EditContext context)
     {
-        bool result = await TaskApiClient.CreateTask(Task);
+        bool result = await TaskApiClient.UpdateTask(Guid.Parse(TaskId), Task);
         if (result)
         {
             ToastServices.ShowSuccess($"{Task.Name} has been created successfuly.", settings => { settings.Timeout = 15; settings.PauseProgressOnHover = true; settings.ExtendedTimeout = 1; });

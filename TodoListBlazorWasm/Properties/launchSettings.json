@@ -8,17 +8,17 @@
     }
   },
   "profiles": {
-    "Watch": {
-      "commandName": "Executable",
-      "executablePath": "dotnet.exe",
-      "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "watch run",
-      "launchBrowser": false,
-      "launchUrl": "https://localhost:7026",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
+    //"Watch": {
+    //  "commandName": "Executable",
+    //  "executablePath": "dotnet.exe",
+    //  "workingDirectory": "$(ProjectDir)",
+    //  "commandLineArgs": "watch run",
+    //  "launchBrowser": false,
+    //  "launchUrl": "https://localhost:7026",
+    //  "environmentVariables": {
+    //    "ASPNETCORE_ENVIRONMENT": "Development"
+    //  }
+    //},
       "TodoListBlazorWasm": {
         "commandName": "Project",
         "dotnetRunMessages": true,

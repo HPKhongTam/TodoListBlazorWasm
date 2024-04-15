@@ -34,7 +34,7 @@ namespace TodoList.Api.Controler
                 Name = request.Name,
                 Status = (int)Status.Open,
                 CreatedDate = DateTime.Now,
-                Priority = request.Priority.HasValue? (int)request.Priority.Value:(int)Priority.Low,
+                Priority = request.Priority.HasValue ? (int)request.Priority.Value : (int)Priority.Low,
                 Id = request.Id
 
             });
@@ -42,7 +42,7 @@ namespace TodoList.Api.Controler
         }
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> Update(Guid id, Entitier.Task task)
+        public async Task<IActionResult> Update(Guid id, [FromBody] TaskUpdateRequest task)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -50,7 +50,28 @@ namespace TodoList.Api.Controler
             if (_task == null)
                 return NotFound($"{id} is not fount");
             _task.Name = task.Name;
-            _task.Priority = task.Priority; 
+            _task.Priority = (int)task.Priority;
+            var tasks = await _taskRepository.Update(_task);
+            return Ok(new TaskDto()
+            {
+                Name = tasks.Name != null ? tasks.Name : "",
+                Status = (Models.Enums.Status)tasks.Status,
+                Id = tasks.Id,
+                CreatedDate = tasks.CreatedDate,
+                AsigneeId = tasks.AssigneeId,
+                Priority = (Models.Enums.Priority)tasks.Priority
+            });
+        }
+        [HttpPut]
+        [Route("{id}/assign")]
+        public async Task<IActionResult> AssignTask(Guid id, [FromBody] AssignTaskRequest task)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var _task = await _taskRepository.GetByID(id);
+            if (_task == null)
+                return NotFound($"{id} is not fount");
+            _task.AssigneeId = task.UserId==Guid.Empty?null:task.UserId;
             var tasks = await _taskRepository.Update(_task);
             return Ok(new TaskDto()
             {
@@ -69,7 +90,35 @@ namespace TodoList.Api.Controler
         {
             var tasks = await _taskRepository.GetByID(id);
             if (tasks == null) return NotFound($"{id} is not found");
-            return Ok(tasks);
+            return Ok(new TaskDto()
+            {
+                Name = tasks.Name,
+                Status = (TodoList.Models.Enums.Status)tasks.Status,
+                Id = tasks.Id,
+                AsigneeId = tasks.AssigneeId,
+                Priority = (Models.Enums.Priority)tasks.Priority,
+                CreatedDate = tasks.CreatedDate
+            });
+        }
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+
+            var _task = await _taskRepository.GetByID(id);
+            if (_task == null)
+                return NotFound($"{id} is not fount");
+            await _taskRepository.Delete(_task);
+            var tasks = await _taskRepository.Update(_task);
+            return Ok(new TaskDto()
+            {
+                Name = tasks.Name != null ? tasks.Name : "",
+                Status = (Models.Enums.Status)tasks.Status,
+                Id = tasks.Id,
+                CreatedDate = tasks.CreatedDate,
+                AsigneeId = tasks.AssigneeId,
+                Priority = (Models.Enums.Priority)tasks.Priority
+            });
         }
     }
 }

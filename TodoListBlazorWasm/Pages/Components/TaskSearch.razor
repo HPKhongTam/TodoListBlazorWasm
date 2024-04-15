@@ -1,0 +1,73 @@
+﻿@using TodoList.Models;
+@using TodoList.Models.Enums;
+@using TodoListBlazorWasm.Sevices;
+
+@if (Assignees == null)
+{
+    <LoadingIndicator></LoadingIndicator>
+}
+else
+{
+    <EditForm Model="@TaskListSearch" OnSubmit="@SearchForm">
+        <div class="row">
+            <div class="col">
+                <label>Name</label>
+                <InputText class="form-control" @bind-Value="TaskListSearch.Name"></InputText>
+            </div>
+            <div class="col">
+                <label>Assignee</label>
+                <InputSelect class="form-control" @bind-Value="TaskListSearch.AssigneeId">
+                    <option>Select an assignee</option>
+                    @foreach (var assignee in Assignees)
+                    {
+                        <option value="@assignee.Id">@assignee.FullName</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col">
+                <label>Priority</label>
+                <InputSelect class="form-control" @bind-Value="TaskListSearch.Priority">
+                    <option value="100">Select a Priority</option>
+                    @foreach (string item in Enum.GetNames(typeof(Priority)))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col pt-4">
+
+                <button type="submit" class="btn btn-success">Search</button>
+            </div>
+            <div class="col pt-4">
+                <a href="/taskCreate" class="btn btn-primary">Create</a>
+            </div>
+        </div>
+
+    </EditForm>
+}
+
+@code {
+
+    [Inject] private IUserApiClient UserApiClient { get; set; }
+
+    [Inject] private IToastService ToastService { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskListSearch> OnSearch{ get; set; }
+
+
+    private TaskListSearch TaskListSearch = new TaskListSearch();
+
+    private List<AssigneeDto> Assignees;
+
+    protected async  override Task OnInitializedAsync()
+    {
+        Assignees = await  UserApiClient.GetAssignees();
+    }
+
+    private async Task SearchForm(EditContext editContext)
+    {
+        // ToastService.ShowInfo("Search completed", settings => { settings.Timeout = 15; settings.PauseProgressOnHover = true; settings.ExtendedTimeout = 1; });
+       await OnSearch.InvokeAsync(TaskListSearch);
+    }
+}

@@ -1,7 +1,7 @@
 ﻿@page "/taskDetails/{TaskId}"
 @using TodoListBlazorWasm.Sevices;
 @using TodoList.Models;
-
+@using TodoListBlazorWasm.Compo;
 
 @inject ITaskApiClient TaskApiClient;
 @if (Tasks == null)
@@ -26,11 +26,11 @@ else
         </tr>
         <tr>
             <td>Priority</td>
-            <td>@Tasks.Priority</td>
+            <td><PriorityLabel Priority="@Tasks.Priority"></PriorityLabel> </td>
         </tr>
         <tr>
             <td>Status</td>
-            <td>@Tasks.Status</td>
+            <td><StatusLabel Status="@Tasks.Status"></StatusLabel></td>
         </tr>
     </table>
 }
