@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Polly;
+using System.Text;
 using TodoList.Api.Data;
+using TodoList.Api.Entitier;
 using TodoList.Api.Extensions;
 using TodoList.Api.Repositories;
 
@@ -12,6 +16,24 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//config login using jwt
+builder.Services.AddIdentity<User,Role>()
+    .AddEntityFrameworkStores<TodoListDbContext>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtIssuer"],
+            ValidAudience = builder.Configuration["JwtAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSecurityKey"]))
+        };
+    });
 
 builder.Services.AddControllers();
 
@@ -78,6 +100,7 @@ app.MigrateDbContext<TodoListDbContext>((context, services) =>
 
 app.UseRouting();
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 app.UseCors("CorsPolicy");
 app.Run();

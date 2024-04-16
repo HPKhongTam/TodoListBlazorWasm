@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using TodoList.Api.Data;
 using TodoList.Models;
 using TodoList.Models.Enums;
+using TodoList.Models.SeedWork;
 
 namespace TodoList.Api.Repositories
 {
@@ -31,7 +33,7 @@ namespace TodoList.Api.Repositories
             return await _context.Tasks.FindAsync(id);
         }
 
-        public async Task<IEnumerable<TaskDto>> GetTasksList(TaskListSearch taskListSearch)
+        public async Task<PageList<Entitier.Task>> GetTasksList(TaskListSearch taskListSearch)
         {
             var query = _context.Tasks.Include(x => x.Assignee).AsQueryable();
             if (!string.IsNullOrEmpty(taskListSearch.Name))
@@ -40,18 +42,15 @@ namespace TodoList.Api.Repositories
                 query = query.Where(x => x.AssigneeId.Value == taskListSearch.AssigneeId.Value);
             if (taskListSearch.Priority.HasValue && taskListSearch.Priority.Value.ToString() != "100")
                 query = query.Where(x => x.Priority == (int)taskListSearch.Priority.Value);
-          
 
-            return await query.Select(x => new TaskDto()
-            {
-                Status = (Status)x.Status,
-                Name = x.Name != null ? x.Name : "",
-                AsigneeId = x.AssigneeId,
-                AssigneeName = x.Assignee != null ? x.Assignee.FirstName + ' ' + x.Assignee.LastName : "N/A",
-                CreatedDate = x.CreatedDate,
-                Priority = (Priority)x.Priority,
-                Id = x.Id,
-            }).OrderByDescending(x=>x.CreatedDate).ToListAsync();
+            var count = await query.CountAsync();
+
+
+
+            var data = await query.OrderByDescending(x => x.CreatedDate)
+            .Skip((taskListSearch.PageNumber - 1) * taskListSearch.PageSize)
+            .Take(taskListSearch.PageSize).ToListAsync();
+            return new PageList<Entitier.Task>(data, count, taskListSearch.PageNumber, taskListSearch.PageSize);
 
 
         }
