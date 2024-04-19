@@ -25,6 +25,9 @@ namespace TodoList.Api.Data
                     TwoFactorEnabled = false,
                     LockoutEnabled = false,
                     AccessFailedCount = 0,
+                    NormalizedUserName = "ADMIN",
+                    NormalizedEmail= "ADMIN@GMAIL.COM",
+                    SecurityStamp= Guid.NewGuid().ToString(),
                 };
                 user.PasswordHash = _passwordHasher.HashPassword(user, "Admin@123$");
                 context.Users.Add(user);
